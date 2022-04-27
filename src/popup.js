@@ -1,4 +1,5 @@
 import * as xlsx from 'xlsx';
+import wellnessCenterQualtrics from './formWriters/wellnessCenterQualtrics';
 
 const loadExcel = document.getElementById('loadExcel');
 const queryInput = document.querySelector("#queryInput");
@@ -12,6 +13,10 @@ const [studentRadio, employeeRadio, communityRadio] = [
     document.querySelector("#employeeRadio"),
     document.querySelector("#communityRadio")
 ];
+
+const formWriters = {
+    wellness: wellnessCenterQualtrics()
+}
 
 function convertFullNameToFirstAndLast(name) {
     const nameArray = name.match(/\S+/g) || [];
@@ -113,7 +118,7 @@ submit.addEventListener("click", async (evt) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.scripting.executeScript({
         target: {tabId: tab.id},
-        function: submitQualtricsForm
+        function: formWriters["wellness"].writeFunction
     });
 });
 studentRadio.addEventListener("click", radioButtonChanged);
@@ -123,43 +128,3 @@ communityRadio.addEventListener("click", radioButtonChanged);
 clear.addEventListener("click", () => {
     chrome.storage.local.clear();
 });
-
-function submitQualtricsForm() {
-    chrome.storage.local.get(["viewState", "viewStateRows", "viewStatePersonType"], obj => {
-        //Get elements
-
-        const viewState = obj.viewState;
-        const viewStateRows = JSON.parse(obj.viewStateRows);
-        function getIdByMonth(month) {
-            return `#QID20-${month}-label`;
-        }
-
-        const qStarID = document.getElementById("QR~QID5");
-        const qFirstName = document.getElementById("QR~QID3");
-        const qLastName = document.getElementById("QR~QID16");
-        const qDate = document.getElementById("QR~QID6");
-        const qStudent = document.getElementById("QR~QID23~1");
-        const qStaff = document.getElementById("QR~QID23~2");
-        const qCommunityMember = document.getElementById("QR~QID23~4");
-        const qSubmit = document.getElementById("NextButton");
-
-        const currentRow = viewStateRows[viewState.selectedRowStarID];
-        qStarID.value = currentRow["StarID"];
-        qFirstName.value = currentRow["FirstName"];
-        qLastName.value = currentRow["LastName"];
-        qDate.value = viewState.date;
-
-        switch(obj.viewStatePersonType) {
-            case "student":
-                qStudent.click();
-            break;
-            case "employee":
-                qStaff.click();
-            break;
-            case "communityMember":
-                qCommunityMember.click();
-            break;
-        }
-        document.querySelector(getIdByMonth(new Date(viewState.date).getMonth() + 1)).click();
-    });
-}

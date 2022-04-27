@@ -18,6 +18,13 @@
         <h1>Welcome</h1>
         <p>You will need to load your dataset before continuing</p>
         <div class="form-group">
+            <label for="formType">Select form type:</label>
+            <select id="formType" name="formType">
+                <option value="wellness">Wellness Center</option>
+                <option value="event">Event</option>
+            </select>
+        </div>
+        <div class="form-group">
             <input type="file" id="file" name="file" accept=".xlsx" />
             <button id="loadExcel">Load Excel Spreadsheet</button>
         </div>
