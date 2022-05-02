@@ -1,6 +1,7 @@
 import * as xlsx from 'xlsx';
 import wellnessCenterQualtrics from './formWriters/wellnessCenterQualtrics';
 
+const formType = document.getElementById("#formType");
 const loadExcel = document.getElementById('loadExcel');
 const queryInput = document.querySelector("#queryInput");
 const queryList = document.querySelector('#query');
@@ -36,6 +37,12 @@ function radioButtonChanged(evt) {
     chrome.storage.local.set({
         "viewStatePersonType": evt.target.value
     });
+}
+
+for(let formWriter of formWriters) {
+    const option = document.createElement("option");
+    option.value = formWriter.name;
+    option.text = formWriter.friendlyName;
 }
 
 chrome.storage.local.get(["viewState", "viewStateRows", "viewStatePersonType"], obj => {
