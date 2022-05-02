@@ -72,6 +72,7 @@ export default class FormBuilder {
             radioElement.name = name;
             radioElement.id = option.id;
             radioElement.value = option.value;
+            radioElement.innerText = option.text;
             div.appendChild(radioElement);
             radioElements.push(radioElement);
         }
